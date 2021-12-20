@@ -9,6 +9,18 @@ var usersRouter = require('./routes/users');
 let dishRouter = require('./routes/dishRouter');
 let promoRouter = require('./routes/promoRouter');
 let leaderRouter = require('./routes/leaderRouter'); //added here 
+//implementation of db here 
+const mongoose = require('mongoose');
+const dishes = require('./models/dishes');
+const url = 'mongodb://127.0.0.1:27017/';
+const connect = mongoose.connect(url);
+connect.then((db) => {
+  console.log('connecte to the server \n')
+}, (err) => {
+  console.log(err);
+})
+//connection established here 
+
 var app = express();
 
 // view engine setup
@@ -42,5 +54,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
