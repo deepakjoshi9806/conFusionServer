@@ -15,7 +15,7 @@ const dishes = require('./models/dishes');
 const url = 'mongodb://127.0.0.1:27017/';
 const connect = mongoose.connect(url);
 connect.then((db) => {
-  console.log('connecte to the server \n')
+  console.log('connected to the server \n')
 }, (err) => {
   console.log(err);
 })
