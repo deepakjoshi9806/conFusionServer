@@ -1,7 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser'); //cookie parser thru generator
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -30,30 +30,52 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
+app.use(cookieParser('12345-67890-09876-54321')); //cookie parser middleware 
+//code inside signs the cookie and encrypts such that only the server can read it
+//after setting up cookie the client need not sign in each time. he just needs to include the 
+//cookie each time we requests data from server 
 function auth (req, res, next) {
-  console.log(req.headers);
-  var authHeader = req.headers.authorization;
-  if (!authHeader) {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      next(err);
-      return;
-  }
+  console.log(req.signedCookies); //see what the cookie has 
+  if(!req.signedCookies.user) { //user is a prop of signed cookie 
+    //if user field is empty then the user is not authorized yet 
+    //if user is empty then enter this block and ask uset to enter name and password for 1st tm
+    var authHeader = req.headers.authorization;
+    if (!authHeader) { //no data input, reject user
+        var err = new Error('You are not authenticated!');
+        res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 401;
+        next(err);
+        return;
+    }
+    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+    var user = auth[0];
+    var pass = auth[1];
+    if (user == 'admin' && pass == 'password') { //data sent from client and matched
+      //data needs to be stored in cookie if this block is entered
+      res.cookie('user', 'admin', {signed: true}) //setup the cookie 
+      //make and store a cookie in the client side
 
-  var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-  var user = auth[0];
-  var pass = auth[1];
-  if (user == 'admin' && pass == 'password') {
-      next(); // authorized
-  } else {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');      
+        next(); // authorized
+    } else { //sent but not matched 
+        var err = new Error('You are not authenticated!');
+        res.setHeader('WWW-Authenticate', 'Basic');      
+        err.status = 401;
+        return next(err); //return added 
+    }
+
+  } 
+  else { //signed cookie already exists 
+    if(req.signedCookies.user == 'admin') { //if the username is correct then pass the req
+      next();
+    }
+    else {//less likely to come ehere cuz cookie 
+      //is already in client side and it should be correct
+      var err = new Error('You are not authenticated!');     
       err.status = 401;
-      next(err);
+      return next(err); //return added 
+    }
   }
+  
 }
 
 app.use(auth);
