@@ -45,41 +45,25 @@ app.use(session({ //setting up session middleware
   store: new fileStore()
 
 }))
+app.use('/', indexRouter); //.use is for all middle wares 
+app.use('/users', usersRouter);
 function auth (req, res, next) {
   console.log(req.session); //see what the cookie has 
-  if(!req.session.user) { //1st time entry
-    //if user is empty then enter this block and ask uset to enter name and password for 1st tm
-    var authHeader = req.headers.authorization;
-    if (!authHeader) { //no data input, reject user
+  if(!req.session.user) { 
         var err = new Error('You are not authenticated!');
         res.setHeader('WWW-Authenticate', 'Basic');
         err.status = 401;
-        next(err);
-        return;
+        return next(err);
     }
-    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-    var user = auth[0];
-    var pass = auth[1];
-    if (user == 'admin' && pass == 'password') { //data sent from client and matched
-      req.session.user = 'admin';
-        next(); // authorized
-    } else { //sent but not matched 
-        var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');      
-        err.status = 401;
-        return next(err); //return added 
-    }
-
-  } 
+   
   else { //signed cookie already exists 
-    if(req.session.user == 'admin') { //if the username is correct then pass the req
+    if(req.session.user == 'authenticated') { //if the username is correct then pass the req
       next();
     }
-    else {//less likely to come ehere cuz cookie 
-      //is already in client side and it should be correct
+    else {
       var err = new Error('You are not authenticated!');     
       err.status = 401;
-      return next(err); //return added 
+      return next(err); 
     }
   }
   
@@ -90,8 +74,7 @@ app.use(express.static(path.join(__dirname, 'public'))); //this allows chient to
 //so setup authencation before this 
 //middleware after this point have to go through the authorization 
 //here 
-app.use('/', indexRouter); //.use is for all middle wares 
-app.use('/users', usersRouter);
+
 app.use('/dishes', dishRouter);
 app.use('/leaders', leaderRouter);
 //app.use('/promotions', promoRouter);
