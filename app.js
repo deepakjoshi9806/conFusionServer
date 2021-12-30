@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser'); //cookie parser thru generator
 var logger = require('morgan');
 let session = require('express-session');
 let fileStore =  require('session-file-store')(session);//? 
+let passport = require('passport');
+let authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -45,28 +47,23 @@ app.use(session({ //setting up session middleware
   store: new fileStore()
 
 }))
+app.use(passport.initialize()) //passport auth begin
+app.use(passport.session())  //passport 
+//
 app.use('/', indexRouter); //.use is for all middle wares 
 app.use('/users', usersRouter);
 function auth (req, res, next) {
-  console.log(req.session); //see what the cookie has 
-  if(!req.session.user) { 
+  
+  if(!req.user) { 
         var err = new Error('You are not authenticated!');
         res.setHeader('WWW-Authenticate', 'Basic');
-        err.status = 401;
+        err.status = 403;
         return next(err);
     }
    
   else { //signed cookie already exists 
-    if(req.session.user == 'authenticated') { //if the username is correct then pass the req
-      next();
-    }
-    else {
-      var err = new Error('You are not authenticated!');     
-      err.status = 401;
-      return next(err); 
-    }
-  }
-  
+    next(err); 
+    } 
 }
 
 app.use(auth);
