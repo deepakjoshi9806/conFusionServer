@@ -4,6 +4,7 @@ const leaderrouter = express.Router();
 const mongoose = require('mongoose');
 const Leader = require('../models/leaders');
 leaderrouter.use(bodyParser.json());
+let authenticate = require('../authenticate')
 
 leaderrouter.route('/') //.all deleted
 .get((req,res,next) => {
@@ -14,7 +15,9 @@ leaderrouter.route('/') //.all deleted
         res.send(lead)  
     }, (err) => next(err))
 })
-.post((req, res, next) => {
+.post( authenticate.verifyUser ,(req, res, next) => {
+    //1st the verify user middleware is executed and then server services the request if
+    //verifyuser is successful
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     Leader.create(req.body)
@@ -23,7 +26,7 @@ leaderrouter.route('/') //.all deleted
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.put((req, res, next) => {
+.put( authenticate.verifyUser ,(req, res, next) => {
     
      res.statusCode = 403; 
      res.end('PUT operation not supported on leaders/');
@@ -31,7 +34,7 @@ leaderrouter.route('/') //.all deleted
     
 
 })
-.delete((req, res, next) => {
+.delete( authenticate.verifyUser ,(req, res, next) => {
     Leader.remove()
     .then((promo) => {
         res.end('deleting promotion:'); 
@@ -54,11 +57,11 @@ leaderrouter.route('/:leaderId')
      .catch((err) => next(err));
    
 })
-.post((req, res, next) => {
+.post( authenticate.verifyUser ,(req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /leaders/'+ req.params.promoId);
 })
-.put((req, res, next) => {
+.put( authenticate.verifyUser ,(req, res, next) => {
     Leader.findOne({_id:req.params.promoId}) 
     .then((lead) => {
         if(lead != null) {
@@ -79,7 +82,7 @@ leaderrouter.route('/:leaderId')
         
     })
 })
-.delete((req, res, next) => {
+.delete( authenticate.verifyUser ,(req, res, next) => {
    Leader.findOne({_id:req.params.leaderId})
    .then((lead) => {
     if(lead != null) {

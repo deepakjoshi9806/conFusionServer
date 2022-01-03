@@ -3,8 +3,9 @@ const bodyParser = require('body-parser');
 let User = require('../models/users');
 var router = express.Router();
 let passport = require('passport');
+const { authenticate } = require('passport');
 router.use(bodyParser.json()); //talk in form of json documents
-
+let authenticate1 = require('../authenticate')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -31,9 +32,12 @@ router.post('/signup', (req, res, next) => {
 
 router.post('/login', passport.authenticate('local'),  (req,res) => {
   //we will use body to authenticate not the authenticate dialogue box
+  let token = authenticate1.getToken({_id: req.user._id}); //ask user id from client side
+
+
   res.statusCode = 200;
   res.setHeader('Content-type', 'application/json')
-  res.json({success: true, status:'you are successfully logged in'});
+  res.json({success: true, token:token,  status:'you are successfully logged in'});
   //the passport.authenticate checks for username and pw and if there is error it 
   //will not enter the callback area, if it finds a match it will enter the callback area
 
