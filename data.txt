@@ -1,0 +1,31 @@
+{
+    "name": "deepak",
+    "image": "image",
+    "designation": "designation",
+    "abbr": "abbr",
+    "description": "description",
+    "featured": "0"
+}
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWQ5MWM3OTg4OGRiNzM5ZjA2ZTY2NjQiLCJpYXQiOjE2NDE2MjMxOTcsImV4cCI6MTY0MTYyNjc5N30.GvM_2RKyOx7VjygauuwIJGpzbEY22_Mezd12b5FHwXc
+{
+    "name": "pizza",
+    "image": "image",
+    "category": "catagory",
+    "label": "label",
+    "price": "price",
+    "featured": "0",
+    "description": "description",
+    "comments": []
+}
+
+
+{
+    "username" : "deepakanother",
+    "password" : "pass"
+}
+
+61d928b662bc68331c7af5d4
+
+ "rating" : "3", 
+   "comment": "this is a 2nd test comment " 

@@ -7,6 +7,14 @@ let passportLocalMongoose = require('passport-local-mongoose');
 //username and password added by the passport-local-mongoose plugin
 
 let User = new Schema({
+    firstname: {
+        type: String,
+        default: ""
+    },
+    lastname: {
+        type: String,
+        default: ""
+    },
     admin: { //mark user as a administrative user 
         type: Boolean,
         default: false 

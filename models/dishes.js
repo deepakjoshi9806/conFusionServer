@@ -15,8 +15,11 @@ const commentschema = new Schema({
         required: true
     },
     author: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId, //this has ref to a model 
+        ref : 'User' //ref to schema Users.js
+        //when a user is logged in, he gives his name , that name first and last is used 
+        // its object id is refereced to auther field here  
+        // here we are populating auther with another object
     }
 
 }, {

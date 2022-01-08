@@ -17,7 +17,7 @@ let leaderRouter = require('./routes/leaderRouter'); //added here
 const mongoose = require('mongoose');
 const dishes = require('./models/dishes');
 const { sessionId } = require('session-file-store/lib/session-file-helpers');
-const url = 'mongodb://127.0.0.1:27017/'; //use config.mongoURL
+const url = 'mongodb://127.0.0.1:27017/conFusion'; //use config.mongoURL
 const connect = mongoose.connect(url);
 connect.then((db) => {
   console.log('connected to the server \n')
@@ -76,7 +76,7 @@ app.use(express.static(path.join(__dirname, 'public'))); //this allows chient to
 //middleware after this point have to go through the authorization 
 //here 
 
-// app.use('/dishes', dishRouter); 
+app.use('/dishes', dishRouter); 
 app.use('/leaders', leaderRouter); //test only with leaders and users 
 //app.use('/promotions', promoRouter);
 

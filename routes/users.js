@@ -6,12 +6,12 @@ let passport = require('passport');
 const { authenticate } = require('passport');
 router.use(bodyParser.json()); //talk in form of json documents
 let authenticate1 = require('../authenticate')
-
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+//take first name and last name from client 
 router.post('/signup', (req, res, next) => {
   User.register(new User({username: req.body.username}), 
     req.body.password, (err, user) => {
@@ -21,14 +21,27 @@ router.post('/signup', (req, res, next) => {
       res.json({err: err});
     }
     else {
-      passport.authenticate('local')(req, res, () => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, status: 'Registration Successful!'});
+      if(req.body.firstname)
+        User.firstname = req.body.firstname;
+      if(req.body.lastname)
+        User.lastname = req.body.lastname;
+      user.save((err, user) =>{
+          if(err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({err: err});
+          return;
+          }
+          passport.authenticate('local')(req, res, () => {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({success: true, status: 'Registration Successful!'});
+      })
       });
     }
   });
 });
+
 
 router.post('/login', passport.authenticate('local'),  (req,res) => {
   //we will use body to authenticate not the authenticate dialogue box
